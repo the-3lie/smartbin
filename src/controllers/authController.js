@@ -1,12 +1,8 @@
-const router = require("express").Router();
-
 const User = require("../models/User");
 
-router.post("/register", async (req, res) => {
+exports.register = async (req, res) => {
 
     try {
-
-        console.log(req.body);
 
         const user = new User({
             nom: req.body.nom,
@@ -17,23 +13,21 @@ router.post("/register", async (req, res) => {
 
         await user.save();
 
-        res.status(200).json({
+        res.status(201).json({
             success: true,
+            message: "Utilisateur enregistré",
             user
         });
 
     } catch (error) {
 
-        console.log("ERREUR REGISTER");
         console.log(error);
 
         res.status(500).json({
             success: false,
-            error: error.message
+            message: error.message
         });
 
     }
 
-});
-
-module.exports = router;
+};
