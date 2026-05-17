@@ -1,70 +1,39 @@
-const User = require("../models/utilisateur");
-const bcrypt = require("bcryptjs");
-const jwt = require("jsonwebtoken")
+const router = require("express").Router();
 
-exports.register = async (req, res) => {
-  try {
-    const { nom, prenom, email, motdepasse, role } = req.body;
+const User = require("../models/User");
 
-    const userExist = await User.findOne({ email });
-    if (userExist) {
-      return res.status(400).json({
-        message: "Utilisateur existe déjà"
-      });
+router.post("/register", async (req, res) => {
+
+    try {
+
+        console.log(req.body);
+
+        const user = new User({
+            nom: req.body.nom,
+            prenom: req.body.prenom,
+            email: req.body.email,
+            motdepasse: req.body.motdepasse
+        });
+
+        await user.save();
+
+        res.status(200).json({
+            success: true,
+            user
+        });
+
+    } catch (error) {
+
+        console.log("ERREUR REGISTER");
+        console.log(error);
+
+        res.status(500).json({
+            success: false,
+            error: error.message
+        });
+
     }
 
-    const hashed = await bcrypt.hash(motdepasse, 10);
+});
 
-    const user = await User.create({
-      nom,
-      prenom,
-      email,
-      motdepasse: hashed,
-      role
-    });
-
-    res.status(201).json(user);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Erreur interne du serveur" });
-  }
-};
-
-exports.login = async (req, res) => {
-  try {
-    const { email, motdepasse } = req.body;
-
-    const user = await User.findOne({ email });
-    if (!user) {
-      return res.status(404).json({
-        message: "Utilisateur introuvable"
-      });
-    }
-
-    const isMatch = await bcrypt.compare(motdepasse, user.motdepasse);
-    if (!isMatch) {
-      return res.status(400).json({
-        message: "Mot de passe incorrect"
-      });
-    }
-
-    const token = jwt.sign(
-      {
-        id: user._id,
-        role: user.role
-      },
-      process.env.JWT_SECRET,
-      {
-        expiresIn: "7d"
-      }
-    );
-
-    res.json({
-      token,
-      user
-    });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Erreur interne du serveur" });
-  }
-};
+module.exports = router;
