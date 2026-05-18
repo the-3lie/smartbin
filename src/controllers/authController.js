@@ -1,4 +1,5 @@
 const User = require("../models/User"); 
+
 // ================= REGISTER ================= 
 exports.register = async (req, res) => { 
   
@@ -29,7 +30,7 @@ exports.register = async (req, res) => {
         }; 
         
         // ================= LOGIN ================= 
-        
+
 exports.login = async (req, res) => {
   
         try { 
@@ -66,4 +67,5 @@ exports.login = async (req, res) => {
                res.status(500).json({ 
               success: false,
               message: error.message }); 
-            } };
+            } 
+          };
