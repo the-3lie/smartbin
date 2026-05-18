@@ -8,7 +8,8 @@ exports.register = async (req, res) => {
         nom: req.body.nom, 
         prenom: req.body.prenom, 
         email: req.body.email, 
-        motdepasse: req.body.motdepasse 
+        motdepasse: req.body.motdepasse,
+        role: req.body.role
        
       }); 
       
@@ -34,7 +35,7 @@ exports.register = async (req, res) => {
 exports.login = async (req, res) => {
   
         try { 
-          const { email, motdepasse } = req.body; 
+          const { email, motdepasse, role } = req.body; 
           if (!email || !motdepasse) 
               { return res.status(400).json({
                  success: false, 
@@ -53,6 +54,13 @@ exports.login = async (req, res) => {
              success: false, 
              message: "Mot de passe incorrect" });
              } 
+
+          if(use.role !== role){
+            return res.status(403).json({
+              success: false,
+              message:"accès refusé"
+            })
+          }
           res.status(200).json({ 
             
         success: true, 
@@ -60,7 +68,8 @@ exports.login = async (req, res) => {
         user: { id: user._id, 
                 nom: user.nom,
                 prenom: user.prenom, 
-                email: user.email 
+                email: user.email,
+                role:user.role
               } }); 
             } catch (error) {
                console.log(error); 
