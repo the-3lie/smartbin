@@ -65,16 +65,14 @@ app.get("/", (req, res) => {
 
 // ================= MONGODB =================
 
-mongoose.connect(process.env.MONGO_URI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true
-})
+
+
+mongoose.connect(process.env.MONGO_URI)
 .then(() => {
-    console.log("✅ MongoDB connecté");
+    console.log("MongoDB connecté");
 })
 .catch((err) => {
-    console.log("❌ Erreur MongoDB");
-    console.log(err);
+    console.log("Erreur MongoDB", err);
 });
 
 // ================= 404 =================
