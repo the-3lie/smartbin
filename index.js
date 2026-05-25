@@ -22,3 +22,14 @@ const PORT = process.env.PORT || 5000;
 server.listen(PORT, () => {
     console.log(`Serveur lancé sur le port ${PORT}`);
 });
+
+const jwt = require('jsonwebtoken');
+
+const token = jwt.sign(
+   {
+      id: user._id,
+      role: user.role
+   },
+   process.env.JWT_SECRET,
+   { expiresIn: '7d' }
+);

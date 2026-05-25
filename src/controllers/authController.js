@@ -48,30 +48,22 @@ exports.connexion = async (req, res) => {
 
    try {
 
-      const { email, motdepasse, role } = req.body;
+      const { email, motdepasse } = req.body;
 
       if (!email || !motdepasse) {
-
          return res.status(400).json({
-
             success: false,
             message: "Veuillez remplir tous les champs"
-
          });
-
       }
 
       const user = await User.findOne({ email });
 
       if (!user) {
-
          return res.status(404).json({
-
             success: false,
             message: "Utilisateur introuvable"
-
          });
-
       }
 
       const isMatch = await bcrypt.compare(
@@ -80,31 +72,26 @@ exports.connexion = async (req, res) => {
       );
 
       if (!isMatch) {
-
          return res.status(401).json({
-
             success: false,
             message: "Mot de passe incorrect"
-
          });
-
       }
 
-      if (user.role !== role) {
-
-         return res.status(403).json({
-
-            success: false,
-            message: "Accès refusé"
-
-         });
-
-      }
+      const token = jwt.sign(
+         {
+            id: user._id,
+            role: user.role
+         },
+         process.env.JWT_SECRET,
+         { expiresIn: "7d" }
+      );
 
       res.status(200).json({
 
          success: true,
          message: "Connexion réussie",
+         token,
 
          user: {
 
