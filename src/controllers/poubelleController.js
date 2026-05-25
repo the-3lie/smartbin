@@ -149,15 +149,14 @@ exports.rfid = async (req, res) => {
 
     try {
 
-        const { uid, nom } = req.body;
+        const { uid } = req.body;
 
-        if (!uid || !nom) {
+        if (!uid) {
 
             return res.status(400).json({
                 success: false,
-                message: "UID et nom obligatoires"
+                message: "UID obligatoire"
             });
-
         }
 
         const exist = await Poubelle.findOne({ uid });
@@ -168,17 +167,18 @@ exports.rfid = async (req, res) => {
                 success: false,
                 message: "Carte RFID déjà enregistrée"
             });
-
         }
 
         const poubelle = await Poubelle.create({
-            nom,
+
+            nom: "Poubelle-" + uid,
             uid,
             niveau: 0,
             statut: "vide"
         });
 
         res.status(201).json({
+
             success: true,
             message: "Carte RFID ajoutée",
             data: poubelle
@@ -189,12 +189,11 @@ exports.rfid = async (req, res) => {
         console.log(error);
 
         res.status(500).json({
+
             success: false,
             message: error.message
         });
-
     }
-
 };
 
 
@@ -214,7 +213,6 @@ exports.niveau = async (req, res) => {
                 success: false,
                 message: "UID et niveau obligatoires"
             });
-
         }
 
         const poubelle = await Poubelle.findOne({ uid });
@@ -225,12 +223,11 @@ exports.niveau = async (req, res) => {
                 success: false,
                 message: "Poubelle introuvable"
             });
-
         }
 
         poubelle.niveau = niveau;
 
-        // Gestion statut automatique
+        // Statut automatique
 
         if (niveau >= 80) {
 
@@ -243,12 +240,12 @@ exports.niveau = async (req, res) => {
         } else {
 
             poubelle.statut = "vide";
-
         }
 
         await poubelle.save();
 
         res.status(200).json({
+
             success: true,
             message: "Niveau mis à jour",
             data: poubelle
@@ -259,10 +256,9 @@ exports.niveau = async (req, res) => {
         console.log(error);
 
         res.status(500).json({
+
             success: false,
             message: error.message
         });
-
     }
-
 };
